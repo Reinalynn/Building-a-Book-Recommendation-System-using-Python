@@ -9,9 +9,10 @@ If an RS suggests items to a user based on past interactions between users and i
 Content filtering, on the other hand, focuses exclusively on either the item or the user and does not need any information about interactions between the two. Instead, content filtering calculates the similarity between items or users using attributes of the items or users themselves. For my book data, I will use book reviews and text analysis to determine which books are most similar to books that I like and thus which books should be recommended (item based).
 
 ## Data
-While there are many book datasets available to use, I decided to work with Goodreads Book data. There are several full Goodreads data sets available at the [UCSD Book Graph site](https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/home) and I initially worked with this data to analyze metadata for books, authors, series, genres, reviews, and the interactions between users and items. Once I began building the models, I quickly realized that my dataset was too large. Rather than limit myself to just one genre, I chose to use the [Goodreads 10k data set](https://www.kaggle.com/zygmunt/goodbooks-10k/version/4). This data set contains book metdata, ratings, book tags, and book shelves. 
+While there are many book datasets available to use, I decided to work with Goodreads Book data. There are several full Goodreads data sets available at the [UCSD Book Graph site](https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/home) and I initially worked with this data to analyze metadata for books, authors, series, genres, reviews, and the interactions between users and items. Once I began building the models, I quickly realized that my dataset was too large. Rather than limit myself to just one genre, I chose to use the [Goodreads 10k data set](https://www.kaggle.com/zygmunt/goodbooks-10k/version/4), a subset of the full Goodreads data sets. This data set contains book metdata, ratings, book tags, and book shelves. 
 
 For full code, view the following files in this github:
+
 [EDA - full Goodreads authors, works, series, genres, interactions.ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/EDA%20-%20full%20Goodreads%20authors%2C%20works%2C%20series%2C%20genres%2C%20interactions.ipynb)   
 [Data prep - full Goodreads loading files, statistics, distributions.ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Data%20prep%20-%20full%20Goodreads%20loading%20files%2C%20statistics%2C%20distributions.ipynb)
 
@@ -27,48 +28,48 @@ def parse(path):
 books = parse('Unused data/goodreads_books.json.gz')
 next(books)
 ```
-This Python generator allows me to view a full book record in order to understand which fields are represented:
+This Python generator allowed me to view a full book record in order to understand which fields are represented:
 >{'isbn': '0312853122',
- 'text_reviews_count': '1',
- 'series': [],
- 'country_code': 'US',
- 'language_code': '',
- 'popular_shelves': [{'count': '3', 'name': 'to-read'},
-  {'count': '1', 'name': 'p'},
-  {'count': '1', 'name': 'collection'},
-  {'count': '1', 'name': 'w-c-fields'},
-  {'count': '1', 'name': 'biography'}],
- 'asin': '',
- 'is_ebook': 'false',
- 'average_rating': '4.00',
- 'kindle_asin': '',
- 'similar_books': [],
- 'description': '',
- 'format': 'Paperback',
- 'link': 'https://www.goodreads.com/book/show/5333265-w-c-fields',
- 'authors': [{'author_id': '604031', 'role': ''}],
- 'publisher': "St. Martin's Press",
- 'num_pages': '256',
- 'publication_day': '1',
- 'isbn13': '9780312853129',
- 'publication_month': '9',
- 'edition_information': '',
- 'publication_year': '1984',
- 'url': 'https://www.goodreads.com/book/show/5333265-w-c-fields',
- 'image_url': 'https://images.gr-assets.com/books/1310220028m/5333265.jpg',
- 'book_id': '5333265',
- 'ratings_count': '3',
- 'work_id': '5400751',
- 'title': 'W.C. Fields: A Life on Film',
- 'title_without_series': 'W.C. Fields: A Life on Film'}
- 
+>'text_reviews_count': '1',
+>'series': [],
+>'country_code': 'US',
+>'language_code': '',
+>'popular_shelves': [{'count': '3', 'name': 'to-read'},
+> {'count': '1', 'name': 'p'},
+> {'count': '1', 'name': 'collection'},
+> {'count': '1', 'name': 'w-c-fields'},
+> {'count': '1', 'name': 'biography'}],
+>'asin': '',
+>'is_ebook': 'false',
+>'average_rating': '4.00',
+>'kindle_asin': '',
+>'similar_books': [],
+>'description': '',
+>'format': 'Paperback',
+>'link': 'https://www.goodreads.com/book/show/5333265-w-c-fields',
+>'authors': [{'author_id': '604031', 'role': ''}],
+>'publisher': "St. Martin's Press",
+>'num_pages': '256',
+>'publication_day': '1',
+>'isbn13': '9780312853129',
+>'publication_month': '9',
+>'edition_information': '',
+>'publication_year': '1984',
+>'url': 'https://www.goodreads.com/book/show/5333265-w-c-fields',
+>'image_url': 'https://images.gr-assets.com/books/1310220028m/5333265.jpg',
+>'book_id': '5333265',
+>'ratings_count': '3',
+>'work_id': '5400751',
+>'title': 'W.C. Fields: A Life on Film',
+>'title_without_series': 'W.C. Fields: A Life on Film'}
+
 The same can be done for any of the large json files available at the [UCSD Book Graph](https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/home) site.
 
 I conducted basic EDA on the full Goodreads data set by first looking at the size of each file. As is clear from these counts, the data sets are very, very large.
 
 ![Full Goodreads counts.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Full%20Goodreads%20counts.png) 
 
-The interactions file is also quite large and contains entries for shelved books (a Goodreads user can classify a book by adding to a shelf that they create, such as a favorites list or a book they wish to read later), read books, rated books, and reviewed books. 
+The interactions file is also quite large and contains entries for shelved books (a Goodreads user can classify a book by adding to a shelf that they create, such as a favorites list or a "to be read" list), read books, rated books, and reviewed books. 
 
 ![Goodreads interactions counts.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Goodreads%20interactions%20counts.png)
 
