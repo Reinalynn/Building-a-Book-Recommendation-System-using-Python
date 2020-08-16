@@ -137,11 +137,11 @@ In Collaborative Filtering, the model is often predicting the user's rating for 
 #### PySpark
 The PySpark package in Python uses the Alternating Least Squares (ALS) method to build recommendation engines. ALS is a matrix factorization running in a parallel fashion and is built for larger scale problems. PySpark was created to support the collaboration of Apache Spark and Python. Because ALS uses matrix factorization, it is comparable to the SVD and SVD++ algorithms in the Surprise package.
 
-I was able to build a Collaborative Filtering RS using PySpark that performed very well according the RMSE, but it was very slow. The original model had a RMSE of 0.396:
+I was able to build a Collaborative Filtering RS using PySpark that performed very well according to the RMSE, but it was quite slow. The original model had a RMSE of 0.396:
 
 ![ALS model with rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/ALS%20model%20with%20rmse.png)
 
-After tuning the model (which took a very, very long time), I was able to drop the RMSE to 0.362:
+After tuning the model using a gridsearch (which took a very long time), I was able to drop the RMSE to 0.362:
 
 ![Tuned ALS model with best rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Tuned%20ALS%20model%20with%20best%20rmse.png)
 
@@ -159,26 +159,26 @@ For full code, view the following file in this github:
 [Collab filtering using pearsonR (item-based recommendations).ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Collab%20filtering%20using%20pearsonR%20(item-based%20recommendations).ipynb)
 
 #### Surprise
-The Surprise package in Python is newer but provided all the tools I needed to test out multiple algorithms for Collaborative Filtering and then guided me through tuning the parameters and cross validating to determine the optimal model. In order to this, I first chose three versions of the data to analyze. I first looked at the most popular books only, filtering down to those with at least 20 book ratings and at least 50 user ratings. I then created a list of midlist books by filtering down to 2 book rating and 20 user ratings. Finally, I used the full list to include books that have as little as 1 book rating and 1 user rating.
+The Surprise package in Python is newer but provided all the tools I needed to test out multiple algorithms for Collaborative Filtering and then guided me through tuning the parameters and cross validating to determine the optimal model. In order to this, I chose three versions of the data to analyze. First, I looked at the most popular books only, filtering down to those with at least 20 book ratings and at least 50 user ratings. I then created a list of midlist books by filtering down to 2 book rating and 20 user ratings. Finally, I used the full list to include books that have as little as 1 book rating and 1 user rating.
 
 ![Algo results](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Algo%20results.png)
 
-Using the top rated algorithms above, I chose to run a GridSearchCV on SVDpp, KNNBaseline, BaselineOnly, and KNNWithMeans. After completing the gridsearches, I ran 10-fold cross validation on each of the tuned models and plotted the results. I was surprised to find that the KNNBaseline ultimely performed best, especially considering that the SVDpp algorithm had been a front runner initially. The SVD algorithm created by Simon Funk is used in the Netflix RS.
+Using the top rated algorithms above, I chose to run a GridSearchCV on SVDpp, KNNBaseline, BaselineOnly, and KNNWithMeans. After completing the gridsearches, I ran 10-fold cross validation on each of the tuned models and plotted the results. I was surprised to find that the KNNBaseline ultimely performed best, especially considering that the SVDpp algorithm had been a front runner initially. The SVD algorithm created by Simon Funk is used in the Netflix RS, so I had expected this to be the most accurate.
 
 ![Optimized algo params.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Optimized%20algo%20params.png)
 ![Cross validation plot.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Cross%20validation%20plot.png)
 
-The KNNBaseline algorithm's lowest RMSE was about 0.85, much higher than the PySpark RMSE of 0.36, but the model was much faster and easier to use. One downfall, though, is that the model predicts books by user so it can only be used with current readers. This is known as the 'cold start problem' because the algorithm will not provide any output until a user has built up a profile. 
+The KNNBaseline algorithm's lowest RMSE was about 0.85, much higher than the PySpark RMSE of 0.36, but the model was faster and easy to use. One downfall, though, is that the model predicts books by user so it can only be used with current readers. This is known as the 'cold start problem' because the algorithm will not provide any output until a user has built up a profile. 
 
 For full code, view the following file in this github:
 
 [Collab filtering using Surprise (algo list, cv, plot, user-based recommendations).ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Collab%20filtering%20using%20Surprise%20(algo%20list%2C%20cv%2C%20plot%2C%20user-based%20recommendations).ipynb)
 
 ### Content Filtering
-Content filtering uses cosine similarity to map attributes (in my case, text) in order to determine which items are most similar to one another. Because of this, there is no way to measure the accuracy of the models and the results are more subjective. However, I do have strong domain knowledge in this area because I used to manage a bookstore and am still fairly well read, so I was able to identify a model that I thought was better than the others. Of course, this is personal preference
+Content filtering uses cosine similarity to map attributes (in my case, text) in order to determine which items are most similar to one another. Because of this, there is no way to measure the accuracy of the models and the results are more subjective. However, I do have strong domain knowledge in this area because I used to manage a bookstore and am still fairly well read, so I was able to identify a model that I thought was better than the others. Of course, this is personal preference.
 
 #### Tfidf and Count Vectorization
-Here, features are extracted using term frequency - inverse document frequency (tfidf) or count vectorization. Using cosine similarity, both count and tfidf seem viable but tfidf might be more accurate since it is better at recommending the same authors and series.
+Here, features are extracted using term frequency-inverse document frequency (tfidf) or count vectorization. Using cosine similarity, both count and tfidf seem viable but tfidf might be more accurate since it is better at recommending the same authors and series.
 
 The code used to extract features from text:
 ```python
@@ -242,12 +242,17 @@ get_recommendation(top, ds, list_scores)
 ```
 ![count recs](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/count%20recs.png)
 
+For full code, view the following file in this github:
+
+[Content filtering by vectorizing on full text (tfidf and count) with word cloud.ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Content%20filtering%20by%20vectorizing%20on%20full%20text%20(tfidf%20and%20count)%20with%20word%20cloud.ipynb)
+
+
 ## Conclusions
 ### Collaborative Filtering
-I created 2 user-based Collaborative Filtering RS via PySpark and Surprise. PySpark, while slower, had a much better RMSE rate and would thus be my preferred model if I wanted to recommend books by user. PearsonR was the only item-based Collaborative Filtering RS that I built but I was satisfied by the results. If I were to continue with this project, I would further investigate item-based models and look for an alternative method of evaluation.
+I created 2 user-based Collaborative Filtering RS via PySpark and Surprise. PySpark, while slower, had a much better RMSE rate and would thus be my preferred model if I wanted to recommend books by user. PearsonR was the only item-based Collaborative Filtering RS that I built but I was satisfied with the results. If I were to continue with this project, I would further investigate item-based models and look for an alternative method of evaluation.
 
 ### Content Filtering
-This portion of the project was most interesting to me because it allowed me to conduct text analysis. Looking at the results of my models, I believe that the tfidf model is most relevant but, as I indicated above, that is a matter of personal preference. It might be interesting to do additional research on the review text for each book, even conducting sentiment analysis to determine what percentage of reviews are positive vs. negative. My interaction with the data led me to believe that most people write positive reviews, but it could be helpful to identify the negative reviews and use those to negatively weight the books for recommendations. 
+This portion of the project was most interesting to me because it allowed me to conduct text analysis. Looking at the results of my models, I believe that the tfidf model is most relevant but, as I indicated above, that is a matter of personal preference. It might be interesting to do additional research on the review text for each book, even conducting sentiment analysis to determine what percentage of reviews are positive vs. negative. My interaction with the data led me to believe that most people write positive reviews, but it could be helpful to identify the negative reviews and use those to negatively weight the books for recommendations. I could also conduct a live survey for users to try out the content filtering models and rate them, allowing me to better measure their success. One final thought for future investigation involves image classification. Goodreads provides a url to show the cover of most of its books, so it could be interesting to see if a model could be trained on the images to predict genre or even recommend titles.
 
 In all, I felt like this was a good choice for a practicum project. The problem was interesting to me and also advanced enough to challenge me to learn more about text analysis and machine learning algorithms used in recommendation engines. The data did involve some cleaning and prep, especially since I had to change datasets in Week 3, but it was not so time consuming that I did not get to spend adequate time on building and tuning the models. I was also able to improve my Python skills and learned how to use several packages that were new to me (Surprise, pandas_profiling, PySpark - I had limited experience).
 
