@@ -135,7 +135,7 @@ As an analysis of the full text field, I created the following word cloud:
 In Collaborative Filtering, the model is often predicting the user's rating for a given book. Because of this, test and train sets can be created and root mean square error (RMSE) can be used to calculate the error rate of the model (difference between actual rating and predicted rating). The lower the RMSE, the lower the error and the more accurate the model.
 
 #### PySpark
-The PySpark package in Python uses the Alternating Least Squares (ALS) method to build recommendation engines. ALS is a matrix factorization running in a parallel fashion and is built for larger scale problems. PySpark was supports the collaboration of Apache Spark and Python.
+The PySpark package in Python uses the Alternating Least Squares (ALS) method to build recommendation engines. ALS is a matrix factorization running in a parallel fashion and is built for larger scale problems. PySpark was created to support the collaboration of Apache Spark and Python. Because ALS uses matrix factorization, it is comporable to the SVD and SVD++ algorithms in the Surprise package.
 
 I was able to build a Collaborative Filtering RS using PySpark that performed very well according the RMSE, but it was very slow. The original model had a RMSE of 0.396:
 
