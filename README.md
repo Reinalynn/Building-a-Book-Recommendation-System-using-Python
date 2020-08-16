@@ -114,13 +114,24 @@ pandas_profiling.ProfileReport(books10k)
 pandas_profiling.ProfileReport(ratings10k)
 ```
 ### Feature Selection and Engineering
-For collaborative filtering, the primary features necessary are user_id, book_id, and ratings.
-For content filtering, it is important to include all of the variables that might be used to determine which items are similar to one another.
+For collaborative filtering, the primary features necessary are user_id, book_id, and ratings. These were already present in the Goodreads 10k dataset and could be found in the ratings10k file.
+
+For content filtering, it was important to include all of the variables that might be used to determine which items are similar to one another. To prepare for this, I had to create a new feature that contained relevant text for each book and then conduct text analysis on that feature. I was prepared to use the review text from each book for this, but I did try out a few different text features. From simplest to most complex, I used book tags only, keywords only, review text only, cleaned review text, and then a full text field that contained review text + title + authors + publication date. As expected, the best results were found with the full text field.
 
 #### Text Analysis
-In order to prep my text data for the content based RS, I followed the following steps:
+In order to prep my text data for the content based RS, I followed these steps:
 1. use generator to list reviews
 2. merge reviews with books
 3. books have multiple reviews - concat all review_text by book title and group 
 4. clean text (this step is optional and I determined it was best to skip)
 5. add back in book metadata because I had mistakenly dropped too many columns in step 2 (because of large data file)
+
+For full code, view the following files in this github:
+
+[Text analysis - build, clean, and prep review text](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Text%20analysis%20-%20build%2C%20clean%2C%20prep%20review%20text.ipynb)
+
+I learned an important lesson when I cleaned and lemmatized the review text. Because many of the reviews contained proper names for book characters or book series, cleaning the text actually led to reduced performance and increased confusion. As a result, I chose not to clean the full text field so that my model could identify these important words and recognize that books with the same proper names should be recognized as most similar.
+
+As an analysis of the full text field, I created the following word cloud:
+
+![Word cloud of full text](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Word%20cloud%20of%20review%20text.png)
