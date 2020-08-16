@@ -118,9 +118,9 @@ In order to prep my text data for the content based RS, I followed these steps:
 4. clean text (this step is optional and I determined it was best to skip)
 5. add back in book metadata because I had mistakenly dropped too many columns in step 2 (because of large data file)
 
-For full code, view the following files in this github:
+For full code, view the following file in this github:
 
-[Text analysis - build, clean, and prep review text](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Text%20analysis%20-%20build%2C%20clean%2C%20prep%20review%20text.ipynb)
+[Text analysis - build, clean, and prep review text.ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Text%20analysis%20-%20build%2C%20clean%2C%20prep%20review%20text.ipynb)
 
 I learned an important lesson when I cleaned and lemmatized the review text. Because many of the reviews contained proper names for book characters or book series, cleaning the text actually led to reduced performance and increased confusion. As a result, I chose not to clean the full text field so that my model could identify these important words and recognize that books with the same proper names should be recognized as most similar.
 
@@ -144,14 +144,34 @@ After tuning the model (which took a very, very long time), I was able to drop t
 
 ![Tuned ALS model with best rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Tuned%20ALS%20model%20with%20best%20rmse.png)
 
+For full code, view the following file in this github:
+
+[Collab filtering using PySpark (user-based recommendations).ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Collab%20filtering%20using%20PySpark%20(user-based%20recommendations).ipynb)
+
 #### Pandas corrwith (pearsonR correlation)
-Some Collaborative Filtering RS are built using a memory based method such as correlation. These models are very simple to build and interpret but the accuracy cannot be measured because the model is simply grouping like items together. The corrwith function in Pandas uses PearsonR's correlation method to output a nice list of recommendations when a book is input:
+Some Collaborative Filtering RS are built using a memory based method such as correlation. These models are very easy to build and interpret but the accuracy cannot be measured because the model is simply grouping like items together. The corrwith function in Pandas uses PearsonR's correlation method to output a nice list of recommendations when a book is input:
 
 ![PearsonR code](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/PearsonR%20code.png)
 
+For full code, view the following file in this github:
 
+[Collab filtering using pearsonR (item-based recommendations).ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Collab%20filtering%20using%20pearsonR%20(item-based%20recommendations).ipynb)
 
+#### Surprise
+The Surprise package in Python is newer but provided all the tools I needed to test out multiple algorithms for Collaborative Filtering and then guided me through tuning the parameters and cross validating to determine the optimal model. In order to this, I first chose three versions of the data to analyze. I first looked at the most popular books only, filtering down to those with at least 20 book ratings and at least 50 user ratings. I then created a list of midlist books by filtering down to 2 book rating and 20 user ratings. Finally, I used the full list to include books that have as little as 1 book rating and 1 user rating.
 
+![Algo results](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Algo%20results.png)
+
+Using the top rated algorithms above, I chose to run a GridSearchCV on SVDpp, KNNBaseline, BaselineOnly, and KNNWithMeans. After completing the gridsearches, I ran 10-fold cross validation on each of the tuned models and plotted the results. I was surprised to find that the KNNBaseline ultimely performed best, especially considering that the SVDpp algorithm had been a front runner initially. The SVD algorithm created by Simon Funk is used in the Netflix RS.
+
+![Optimized algo params.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Optimized%20algo%20params.png)
+![Cross validation plot.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Cross%20validation%20plot.png)
+
+The KNNBaseline algorithm's lowest RMSE was about 0.85, much higher than the PySpark RMSE of 0.36, but the model was much faster and easier to use. One downfall, though, is that the model predicts books by user so it can only be used with current readers. This is known as the 'cold start problem' because the algorithm will not provide any output until a user has built up a profile. 
+
+For full code, view the following file in this github:
+
+[Collab filtering using Surprise (algo list, cv, plot, user-based recommendations).ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Collab%20filtering%20using%20Surprise%20(algo%20list%2C%20cv%2C%20plot%2C%20user-based%20recommendations).ipynb)
 
 ## References:
 * https://heartbeat.fritz.ai/recommender-systems-with-python-part-i-content-based-filtering-5df4940bd831
