@@ -82,3 +82,45 @@ The interactions file is also quite large and contains entries for shelved books
 When visualizating the log-log plot of user/item distributions, both plots appear to follow Zipf's law. Zipf's law is typically used in text analysis and states that the frequency of any word is inversely proportional to its rank in the frequency table. In the case of the Goodreads data, it simply means that many of the book entries are for the same small number of books and from the same small number of users. More information on Zipf's Law can be found [here](https://en.wikipedia.org/wiki/Zipf%27s_law).
 
 ![Log-log plots of interactions](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Log-log%20plots%20of%20interactions.png)
+
+The histogram below shows the distribution of the ratings in the interactions file. The scatterplot also indicates a clear relationship between the number of books read by a user and the number of books reviewed by the same user.
+
+![Hist and scatterplot](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Hist%20and%20scatterplot.png)
+
+I conducted similar analysis of the author file, recognizing that there is quite a bit of overlap between authors who receive high ratings on average and authors that have a large number of text reviews.
+
+![Author plots](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Author%20plots.png)
+
+The genres can be plotted in a pie chart where it becomes clear that fiction is the most prevelant genre. One think to note is that books can be tagged with multiple genres.
+
+![Pie chart of genres](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Pie%20chart%20of%20genres.png)
+
+##### Goodreads 10k dataset
+
+When I switched to the Goodreads 10k dataset for my model building, I conducted EDA using the pandas_profiling functions but the smaller dataset appeared to be representative of the full data.
+
+```python
+import surprise
+import numpy as np
+import pandas as pd
+import pandas_profiling
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+
+books10k = pd.read_csv('Data/books10k.csv')
+ratings10k = pd.read_csv('Data/ratings10k.csv')
+
+pandas_profiling.ProfileReport(books10k)
+pandas_profiling.ProfileReport(ratings10k)
+```
+### Feature Selection and Engineering
+For collaborative filtering, the primary features necessary are user_id, book_id, and ratings.
+For content filtering, it is important to include all of the variables that might be used to determine which items are similar to one another.
+
+#### Text Analysis
+In order to prep my text data for the content based RS, I followed the following steps:
+1. use generator to list reviews
+2. merge reviews with books
+3. books have multiple reviews - concat all review_text by book title and group 
+4. clean text (this step is optional and I determined it was best to skip)
+5. add back in book metadata because I had mistakenly dropped too many columns in step 2 (because of large data file)
