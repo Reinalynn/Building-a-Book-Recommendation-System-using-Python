@@ -16,6 +16,7 @@ For full code, view the following files in this github:
 [Data prep - full Goodreads loading files, statistics, distributions.ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Data%20prep%20-%20full%20Goodreads%20loading%20files%2C%20statistics%2C%20distributions.ipynb)
 
 ### Collection, Cleaning and Analysis
+
 ##### Full Goodreads Dataset
 ```python
 import gzip
@@ -88,7 +89,6 @@ The genres can be plotted in a pie chart where it becomes clear that fiction is 
 ![Pie chart of genres](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Pie%20chart%20of%20genres.png)
 
 ##### Goodreads 10k dataset
-
 When I switched to the Goodreads 10k dataset for my model building, I conducted EDA using the pandas_profiling functions but the smaller dataset appeared to be representative of the full data.
 
 ```python
@@ -129,20 +129,25 @@ As an analysis of the full text field, I created the following word cloud:
 ![Word cloud of full text](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Word%20cloud%20of%20review%20text.png)
 
 ## Building and Tuning the Models
-### Collaborative Filtering
 
-Accuracy can be measured because user based models predict the ratings for users and those predictions can be compared to actual ratings. 
+### Collaborative Filtering
+In Collaborative Filtering, the model is often predicting the user's rating for a given book. Because of this, test and train sets can be created and root mean square error (RMSE) can be used to calculate the error rate of the model (difference between actual rating and predicted rating). The lower the RMSE, the lower the error and the more accurate the model.
 
 #### PySpark
 The PySpark package in Python uses the Alternating Least Squares (ALS) method to build recommendation engines. ALS is a matrix factorization running in a parallel fashion and is built for larger scale problems. PySpark was supports the collaboration of Apache Spark and Python.
 
-I was able to build a Collaborative Filtering RS using PySpark that performed very well according the root mean square error (rmse), but it was very slow. The original model had a rmse of 0.396:
+I was able to build a Collaborative Filtering RS using PySpark that performed very well according the RMSE, but it was very slow. The original model had a RMSE of 0.396:
 
 ![ALS model with rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/ALS%20model%20with%20rmse.png)
 
-After tuning the model (which took a very, very long time), I was able to drop the rmse to 0.362:
+After tuning the model (which took a very, very long time), I was able to drop the RMSE to 0.362:
 
 ![Tuned ALS model with best rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Tuned%20ALS%20model%20with%20best%20rmse.png)
+
+#### Pandas corrwith (pearsonR correlation)
+Some Collaborative Filtering RS are built using a memory based method such as correlation. These models are very simple to build and interpret but the accuracy cannot be measured because the model is simply grouping like items together. The corrwith function in Pandas uses PearsonR's correlation method to output a nice list of recommendations when a book is input:
+
+![PearsonR code](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/PearsonR%20code.png)
 
 
 
