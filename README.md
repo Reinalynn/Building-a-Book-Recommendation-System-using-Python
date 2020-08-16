@@ -8,14 +8,6 @@ If an RS suggests items to a user based on past interactions between users and i
 
 Content filtering, on the other hand, focuses exclusively on either the item or the user and does not need any information about interactions between the two. Instead, content filtering calculates the similarity between items using attributes of the items themselves. For my book data, I will use book reviews and text analysis to determine which books are most similar to books that I like and thus which books should be recommended.
 
-References:
-https://medium.com/@chhavi.saluja1401/recommendation-systems-made-simple-b5a79cac8862
-https://stackabuse.com/creating-a-simple-recommender-system-in-python-using-pandas/
-https://towardsdatascience.com/collaborative-filtering-based-recommendation-systems-exemplified-ecbffe1c20b1
-https://towardsdatascience.com/introduction-to-recommender-systems-6c66cf15ada
-https://towardsdatascience.com/recommendation-systems-models-and-evaluation-84944a84fb8e
-https://towardsdatascience.com/various-implementations-of-collaborative-filtering-100385c6dfe0
-
 ## Data
 While there are many book datasets available to use, I decided to work with Goodreads Book data. There are several full Goodreads data sets available at the [UCSD Book Graph site](https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/home) and I initially worked with this data to analyze metadata for books, authors, series, genres, reviews, and the interactions between users and items. Once I began building the models, I quickly realized that my dataset was too large. Rather than limit myself to just one genre, I chose to use the [Goodreads 10k data set](https://www.kaggle.com/zygmunt/goodbooks-10k/version/4). This data set contains book metdata, ratings, book tags, and book shelves. 
 
@@ -135,3 +127,46 @@ I learned an important lesson when I cleaned and lemmatized the review text. Bec
 As an analysis of the full text field, I created the following word cloud:
 
 ![Word cloud of full text](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Word%20cloud%20of%20review%20text.png)
+
+## Building and Tuning the Models
+### Collaborative Filtering
+
+Accuracy can be measured because user based models predict the ratings for users and those predictions can be compared to actual ratings. 
+
+#### PySpark
+The PySpark package in Python uses the Alternating Least Squares (ALS) method to build recommendation engines. ALS is a matrix factorization running in a parallel fashion and is built for larger scale problems. PySpark was supports the collaboration of Apache Spark and Python.
+
+I was able to build a Collaborative Filtering RS using PySpark that performed very well according the root mean square error (rmse), but it was very slow. The original model had a rmse of 0.396:
+
+![ALS model with rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/ALS%20model%20with%20rmse.png)
+
+After tuning the model (which took a very, very long time), I was able to drop the rmse to 0.362:
+
+![Tuned ALS model with best rmse.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Tuned%20ALS%20model%20with%20best%20rmse.png)
+
+
+
+
+
+## References:
+* https://heartbeat.fritz.ai/recommender-systems-with-python-part-i-content-based-filtering-5df4940bd831
+* https://github.com/ArmandDS/jobs_recommendations/blob/master/job_analysis_content_recommendation.ipynb
+* https://github.com/MengtingWan/goodreads
+* https://github.com/NicolasHug/Surprise/blob/master/examples/top_n_recommendations.py
+* https://github.com/nikitaa30/Content-based-Recommender-System/blob/master/recommender_system.py
+* https://github.com/susanli2016/Machine-Learning-with-Python/blob/master/Recommender%20Systems%20-%20The%20Fundamentals.ipynb
+* https://medium.com/@armandj.olivares/building-nlp-content-based-recommender-systems-b104a709c042
+* https://medium.com/@chhavi.saluja1401/recommendation-systems-made-simple-b5a79cac8862
+* https://stackabuse.com/creating-a-simple-recommender-system-in-python-using-pandas/
+* https://stackoverflow.com/questions/39303912/tfidfvectorizer-in-scikit-learn-valueerror-np-nan-is-an-invalid-document
+* https://towardsdatascience.com/collaborative-filtering-based-recommendation-systems-exemplified-ecbffe1c20b1
+* https://towardsdatascience.com/how-did-we-build-book-recommender-systems-in-an-hour-the-fundamentals-dfee054f978e
+* https://towardsdatascience.com/introduction-to-recommender-systems-6c66cf15ada
+* https://towardsdatascience.com/my-journey-to-building-book-recommendation-system-5ec959c41847
+* https://towardsdatascience.com/recommendation-systems-models-and-evaluation-84944a84fb8e
+* https://towardsdatascience.com/various-implementations-of-collaborative-filtering-100385c6dfe0
+* https://www.kaggle.com/robottums/hybrid-recommender-systems-with-surprise
+* https://www.kaggle.com/vchulski/tutorial-collaborative-filtering-with-pyspark
+* https://www.tutorialspoint.com/change-data-type-for-one-or-more-columns-in-pandas-dataframe-1
+* Mengting Wan, Julian McAuley, "Item Recommendation on Monotonic Behavior Chains", in RecSys'18.
+* Mengting Wan, Rishabh Misra, Ndapa Nakashole, Julian McAuley, "Fine-Grained Spoiler Detection from Large-Scale Review Corpora", in ACL'19.
