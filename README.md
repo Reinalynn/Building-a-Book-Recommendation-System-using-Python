@@ -81,5 +81,4 @@ The interactions file is also quite large and contains entries for shelved books
 
 When visualizating the log-log plot of user/item distributions, both plots appear to follow Zipf's law. Zipf's law is typically used in text analysis and states that the frequency of any word is inversely proportional to its rank in the frequency table. In the case of the Goodreads data, it simply means that many of the book entries are for the same small number of books and from the same small number of users. More information on Zipf's Law can be found [here](https://en.wikipedia.org/wiki/Zipf%27s_law).
 
-![Plot of dist of users.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Plot%20of%20dist%20of%20users.png)
-![Plot of dist of books.png](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Plot%20of%20dist%20of%20books.png)
+![Log-log plots of interactions](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Log-log%20plots%20of%20interactions.png)
