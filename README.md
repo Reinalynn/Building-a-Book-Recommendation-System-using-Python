@@ -115,7 +115,7 @@ For content filtering, it was important to include all of the variables that mig
 In order to prep my text data for the content based RS, I followed these steps:
 1. use generator to list reviews
 2. merge reviews with books
-3. books have multiple reviews - concat all review_text by book title and group 
+3. books have multiple reviews - concat all review_text by book title and group together
 4. clean text (this step is optional and I determined it was best to skip)
 5. add back in book metadata because I had mistakenly dropped too many columns in step 2 (because of large data file)
 
@@ -123,7 +123,7 @@ For full code, view the following file in this github:
 
 [Text analysis - build, clean, and prep review text.ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Text%20analysis%20-%20build%2C%20clean%2C%20prep%20review%20text.ipynb)
 
-I learned an important lesson when I cleaned and lemmatized the review text. Because many of the reviews contained proper names for book characters or book series, cleaning the text actually led to reduced performance and increased confusion. As a result, I chose not to clean the full text field so that my model could identify these important words and recognize that books with the same proper names should be recognized as most similar.
+I learned an important lesson when I cleaned and lemmatized the review text. Because many of the reviews contained proper names for book characters or book series, cleaning the text actually led to reduced performance and increased confusion. As a result, I chose not to clean the full text field so that my model could identify these important words and recognize that books with the same proper names are probably similar.
 
 As an analysis of the full text field, I created the following word cloud:
 
