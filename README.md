@@ -85,7 +85,7 @@ I conducted similar analysis of the author file, recognizing that there is quite
 
 ![Author plots](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Author%20plots.png)
 
-The genres can be plotted in a pie chart where it becomes clear that fiction is the most prevelant genre. One think to note is that books can be tagged with multiple genres.
+The genres can be plotted in a pie chart where it becomes clear that fiction is the most prevelant genre. One thing to note is that books can be tagged with multiple genres.
 
 ![Pie chart of genres](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/Pie%20chart%20of%20genres.png)
 
