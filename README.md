@@ -4,9 +4,9 @@
 Recommender systems have become a part of daily life for users of Amazon and Netflix and even social media. While some sites might use these systems to improve the customer experience (if you liked movie A, you might like movie B) or increase sales (customers who bought product C also bought product D), others are focused on customized advertising and suggestive marketing. As a book lover and former book store manager, I have always wondered where I can find good book recommendations that are both personalized to my interests and also capable of introducing me to new authors and genres. The purpose of this project is to create just such a recommender system (RS).
 
 ### Collaborative Filtering vs. Content Filtering
-If an RS suggests items to a user based on past interactions between users and items, that system is known as a Collaborative Filtering system. In these recommendation engines, a user-item interactions matrix is created such that every user and item pair has a space in the matrix. That space is either filled with the user's rating of that item or it is left blank. This can be used for matrix factorization or nearest neighbor classification, both of which will be addressed when we develop our models. The important thing to remember with collaborative filtering is that user id, item id, and rating are the only fields required. Collaborative models can be user-based or item-based but I will work primarily with item-based modeling because I am interested in finding new books to read, not in finding other users like myself.
+If an RS suggests items to a user based on past interactions between users and items, that system is known as a Collaborative Filtering system. In these recommendation engines, a user-item interactions matrix is created such that every user and item pair has a space in the matrix. That space is either filled with the user's rating of that item or it is left blank. This can be used for matrix factorization or nearest neighbor classification, both of which will be addressed when we develop our models. The important thing to remember with collaborative filtering is that user id, item id, and rating are the only fields required. Collaborative models can be user-based or item-based.
 
-Content filtering, on the other hand, focuses exclusively on either the item or the user and does not need any information about interactions between the two. Instead, content filtering calculates the similarity between items using attributes of the items themselves. For my book data, I will use book reviews and text analysis to determine which books are most similar to books that I like and thus which books should be recommended.
+Content filtering, on the other hand, focuses exclusively on either the item or the user and does not need any information about interactions between the two. Instead, content filtering calculates the similarity between items or users using attributes of the items or users themselves. For my book data, I will use book reviews and text analysis to determine which books are most similar to books that I like and thus which books should be recommended (item based).
 
 ## Data
 While there are many book datasets available to use, I decided to work with Goodreads Book data. There are several full Goodreads data sets available at the [UCSD Book Graph site](https://sites.google.com/eng.ucsd.edu/ucsdbookgraph/home) and I initially worked with this data to analyze metadata for books, authors, series, genres, reviews, and the interactions between users and items. Once I began building the models, I quickly realized that my dataset was too large. Rather than limit myself to just one genre, I chose to use the [Goodreads 10k data set](https://www.kaggle.com/zygmunt/goodbooks-10k/version/4). This data set contains book metdata, ratings, book tags, and book shelves. 
@@ -172,6 +172,83 @@ The KNNBaseline algorithm's lowest RMSE was about 0.85, much higher than the PyS
 For full code, view the following file in this github:
 
 [Collab filtering using Surprise (algo list, cv, plot, user-based recommendations).ipynb](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Code/Collab%20filtering%20using%20Surprise%20(algo%20list%2C%20cv%2C%20plot%2C%20user-based%20recommendations).ipynb)
+
+### Content Filtering
+Content filtering uses cosine similarity to map attributes (in my case, text) in order to determine which items are most similar to one another. Because of this, there is no way to measure the accuracy of the models and the results are more subjective. However, I do have strong domain knowledge in this area because I used to manage a bookstore and am still fairly well read, so I was able to identify a model that I thought was better than the others. Of course, this is personal preference
+
+#### Tfidf and Count Vectorization
+Here, features are extracted using term frequency - inverse document frequency (tfidf) or count vectorization. Using cosine similarity, both count and tfidf seem viable but tfidf might be more accurate since it is better at recommending the same authors and series.
+
+The code used to extract features from text:
+```python
+pd.set_option('display.max_columns', 100)
+ds = pd.read_csv('Data/reviews10k_grouped_full.csv')
+
+# for tf-idf
+from sklearn.feature_extraction.text import TfidfVectorizer
+tfidf_vectorizer = TfidfVectorizer()
+tfidf_rev = tfidf_vectorizer.fit_transform((ds['full_text']))
+
+# for count
+from sklearn.feature_extraction.text import CountVectorizer
+count_vectorizer = CountVectorizer()
+count_rev = count_vectorizer.fit_transform((ds['full_text']))
+```
+Next, I chose a book ('The Name of the Wind' by Patrick Rothfuss, the same title chosen for the PearsonR Collaborative model) and then calculated the similarity between my chosen book and the rest of the books. From there the RS produced output for both tfidf and count vectorization models.
+
+```python
+#Choose book by inserting goodreads_book_id
+g = 186074 
+index = np.where(ds['goodreads_book_id'] == g)[0][0]
+read_book = ds.iloc[[index]]
+
+from sklearn.metrics.pairwise import cosine_similarity
+book_tfidf = tfidf_vectorizer.transform(read_book['full_text'])
+cos_similarity_tfidf = map(lambda x: cosine_similarity(book_tfidf, x), tfidf_rev)
+output = list(cos_similarity_tfidf)
+
+from sklearn.metrics.pairwise import cosine_similarity
+book_count = count_vectorizer.transform(read_book['full_text'])
+cos_similarity_countv = map(lambda x: cosine_similarity(book_count, x), count_rev)
+output2 = list(cos_similarity_countv)
+
+def get_recommendation(top, ds, scores):
+  recommendation = pd.DataFrame(columns = ['goodreads_book_id', 'authors', 'title', 'score'])
+  count = 0
+  for i in top:
+      recommendation.at[count, 'goodreads_book_id'] = ds.iloc[i, 2]
+      recommendation.at[count, 'authors'] = ds.iloc[i, 19]
+      recommendation.at[count, 'title'] = ds.iloc[i, 8]
+      recommendation.at[count, 'score'] =  scores[count]
+      count += 1
+  return recommendation
+```
+For the tfidf model:
+```python
+# for tfidf
+top = sorted(range(len(output)), key=lambda i: output[i], reverse=True)[:10]
+list_scores = [output[i][0][0] for i in top]
+get_recommendation(top, ds, list_scores)
+```
+![tfidf recs](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/tfidf%20recs.png)
+
+For the count model:
+```python
+# for count
+top = sorted(range(len(output2)), key=lambda i: output2[i], reverse=True)[:10]
+list_scores = [output2[i][0][0] for i in top]
+get_recommendation(top, ds, list_scores)
+```
+![count recs](https://github.com/Reinalynn/Building-a-Book-Recommendation-System-using-Python/blob/master/Images/count%20recs.png)
+
+## Conclusions
+### Collaborative Filtering
+I created 2 user-based Collaborative Filtering RS via PySpark and Surprise. PySpark, while slower, had a much better RMSE rate and would thus be my preferred model if I wanted to recommend books by user. PearsonR was the only item-based Collaborative Filtering RS that I built but I was satisfied by the results. If I were to continue with this project, I would further investigate item-based models and look for an alternative method of evaluation.
+
+### Content Filtering
+This portion of the project was most interesting to me because it allowed me to conduct text analysis. Looking at the results of my models, I believe that the tfidf model is most relevant but, as I indicated above, that is a matter of personal preference. It might be interesting to do additional research on the review text for each book, even conducting sentiment analysis to determine what percentage of reviews are positive vs. negative. My interaction with the data led me to believe that most people write positive reviews, but it could be helpful to identify the negative reviews and use those to negatively weight the books for recommendations. 
+
+In all, I felt like this was a good choice for a practicum project. The problem was interesting to me and also advanced enough to challenge me to learn more about text analysis and machine learning algorithms used in recommendation engines. The data did involve some cleaning and prep, especially since I had to change datasets in Week 3, but it was not so time consuming that I did not get to spend adequate time on building and tuning the models. I was also able to improve my Python skills and learned how to use several packages that were new to me (Surprise, pandas_profiling, PySpark - I had limited experience).
 
 ## References:
 * https://heartbeat.fritz.ai/recommender-systems-with-python-part-i-content-based-filtering-5df4940bd831
