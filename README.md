@@ -1,5 +1,7 @@
 # Building a Book Recommender System using Python
 
+Recorded presentation: http://youtu.be/rVDA0WA8tcQ?hd=1
+
 ## Objective
 Recommender systems have become a part of daily life for users of Amazon and Netflix and even social media. While some sites might use these systems to improve the customer experience (if you liked movie A, you might like movie B) or increase sales (customers who bought product C also bought product D), others are focused on customized advertising and suggestive marketing. As a book lover and former book store manager, I have always wondered where I can find good book recommendations that are both personalized to my interests and also capable of introducing me to new authors and genres. The purpose of this project is to create just such a recommender system (RS).
 
